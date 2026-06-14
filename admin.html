@@ -30,14 +30,16 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
 
+<!-- Tela de Login -->
 <div id="telaLogin" class="max-w-sm mx-auto mt-20 bg-branco p-6 rounded-lg sombra text-center">
     <img src="logo.png" alt="Paz Church Belterra" class="h-16 w-auto mx-auto mb-4">
     <h2 class="text-xl font-bold text-principal mb-4">Acesso ao Painel</h2>
     <input type="password" id="senhaAdmin" placeholder="Digite a senha" class="w-full border rounded p-2 mb-3" required>
     <button onclick="verificarSenha()" class="botao w-full">Entrar</button>
-    <p class="text-xs text-center mt-3 text-gray-500">Senha padrão: paz2026</p>
+    <p class="text-xs text-center mt-3 text-gray-500">www.wkbsistemas.com.br</p>
 </div>
 
+<!-- Painel Principal -->
 <div id="painelPrincipal" class="hidden container mx-auto p-4 mt-6">
     <header class="bg-principal text-branco p-4 rounded-lg flex justify-between items-center mb-6">
         <div class="flex items-center gap-3">
@@ -51,6 +53,7 @@
     </header>
 
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Editar Dados do Site -->
         <div class="bg-branco p-5 rounded-lg sombra">
             <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Editar Dados do Site</h3>
             <form id="formConfigSite" class="space-y-3">
@@ -64,12 +67,13 @@
             </form>
         </div>
 
+        <!-- Gerenciar Inscrições -->
         <div class="bg-branco p-5 rounded-lg sombra">
             <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Gerenciar Inscrições</h3>
             <form id="formInscricaoConfig" class="space-y-3">
                 <label class="flex items-center gap-2">
                     <input type="checkbox" id="inscricaoAtiva">
-                    <span>Ativar inscrições</span>
+                    <span>Ativar inscrições no site</span>
                 </label>
                 <input type="text" id="inscricaoTitulo" placeholder="Nome do evento" class="w-full border rounded p-2">
                 <textarea id="inscricaoDesc" placeholder="Descrição do evento" rows="2" class="w-full border rounded p-2"></textarea>
@@ -79,6 +83,7 @@
             </form>
         </div>
 
+        <!-- Cadastrar Notícia -->
         <div class="bg-branco p-5 rounded-lg sombra">
             <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Cadastrar Notícia</h3>
             <form id="formNoticia" class="space-y-3">
@@ -90,6 +95,7 @@
             </form>
         </div>
 
+        <!-- Cadastrar Evento -->
         <div class="bg-branco p-5 rounded-lg sombra">
             <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Cadastrar Evento</h3>
             <form id="formEvento" class="space-y-3">
@@ -103,6 +109,7 @@
             </form>
         </div>
 
+        <!-- Cadastrar Célula -->
         <div class="bg-branco p-5 rounded-lg sombra">
             <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Cadastrar Célula</h3>
             <form id="formCelula" class="space-y-3">
@@ -117,6 +124,7 @@
             </form>
         </div>
 
+        <!-- Adicionar Vídeo -->
         <div class="bg-branco p-5 rounded-lg sombra">
             <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Adicionar Vídeo</h3>
             <form id="formVideo" class="space-y-3">
@@ -136,7 +144,7 @@
         </div>
     </div>
 
-    <!-- Listas de Gerenciamento -->
+    <!-- Listas de Dados -->
     <div class="grid md:grid-cols-2 gap-6 mb-8">
         <div class="bg-branco p-5 rounded-lg sombra">
             <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Mensagens Recebidas</h3>
@@ -182,27 +190,32 @@
 </div>
 
 <script>
-const SENHA_CORRETA = "paz2026";
+const SENHA_CORRETA = "pazchurch2026";
 let celulaEditando = null;
 
 function verificarSenha() {
-    const senha = document.getElementById('senhaAdmin').value;
+    const senha = document.getElementById('senhaAdmin').value.trim();
     if (senha === SENHA_CORRETA) {
         document.getElementById('telaLogin').classList.add('hidden');
         document.getElementById('painelPrincipal').classList.remove('hidden');
         carregarDadosAdmin();
-    } else alert('Senha incorreta!');
+    } else {
+        alert('Senha incorreta! Tente novamente.');
+    }
 }
+
 function sair() {
     document.getElementById('painelPrincipal').classList.add('hidden');
     document.getElementById('telaLogin').classList.remove('hidden');
     document.getElementById('senhaAdmin').value = '';
 }
+
 function lerImagem(arquivo, callback) {
     const leitor = new FileReader();
     leitor.onload = e => callback(e.target.result);
     leitor.readAsDataURL(arquivo);
 }
+
 function abrirModalEditar(celula) {
     celulaEditando = celula;
     document.getElementById('editarId').value = celula.id;
@@ -215,34 +228,46 @@ function abrirModalEditar(celula) {
     document.getElementById('editarContato').value = celula.contato;
     document.getElementById('modalEditarCelula').classList.remove('hidden');
 }
+
 function fecharModalEditar() {
     document.getElementById('modalEditarCelula').classList.add('hidden');
     celulaEditando = null;
 }
+
 function apagarItem(chave, id) {
     const lista = JSON.parse(localStorage.getItem(chave)) || [];
-    const nova = lista.filter(i => i.id !== id);
-    localStorage.setItem(chave, JSON.stringify(nova));
+    const novaLista = lista.filter(item => item.id !== id);
+    localStorage.setItem(chave, JSON.stringify(novaLista));
     carregarDadosAdmin();
-    alert('Removido com sucesso!');
+    alert('Item removido com sucesso!');
 }
 
 function carregarDadosAdmin() {
-    const conf = JSON.parse(localStorage.getItem('configSite')) || {};
-    document.getElementById('confEndereco').value = conf.endereco || '';
-    document.getElementById('confCidade').value = conf.cidade || '';
-    document.getElementById('confCep').value = conf.cep || '';
-    document.getElementById('confTelefone').value = conf.telefone || '';
-    document.getElementById('confInstagram').value = conf.instagram || '';
-    document.getElementById('confYoutube').value = conf.youtube || '';
+    // Carregar configurações do site
+    const conf = JSON.parse(localStorage.getItem('configSite')) || {
+        endereco: "Estrada UM, S/N",
+        cidade: "Belterra - PA",
+        cep: "68143-000",
+        telefone: "(93) 99999-0000",
+        instagram: "https://www.instagram.com/pazchurchbelterra",
+        youtube: "https://youtube.com/@pazchurchbelterra2589"
+    };
+    document.getElementById('confEndereco').value = conf.endereco;
+    document.getElementById('confCidade').value = conf.cidade;
+    document.getElementById('confCep').value = conf.cep;
+    document.getElementById('confTelefone').value = conf.telefone;
+    document.getElementById('confInstagram').value = conf.instagram;
+    document.getElementById('confYoutube').value = conf.youtube;
 
-    const confIns = JSON.parse(localStorage.getItem('configInscricao')) || {};
-    document.getElementById('inscricaoAtiva').checked = confIns.ativo || false;
+    // Carregar configuração de inscrições
+    const confIns = JSON.parse(localStorage.getItem('configInscricao')) || { ativo: false };
+    document.getElementById('inscricaoAtiva').checked = confIns.ativo;
     document.getElementById('inscricaoTitulo').value = confIns.titulo || '';
     document.getElementById('inscricaoDesc').value = confIns.descricao || '';
     document.getElementById('inscricaoValor').value = confIns.valor || '';
     document.getElementById('inscricaoData').value = confIns.dataLimite || '';
 
+    // Carregar mensagens recebidas
     const mensagens = JSON.parse(localStorage.getItem('mensagensRecebidas')) || [];
     document.getElementById('listaMensagens').innerHTML = mensagens.length ?
         mensagens.map(m => `
@@ -253,4 +278,176 @@ function carregarDadosAdmin() {
                 <p><strong>Mensagem:</strong> ${m.texto}</p>
                 <button onclick="apagarItem('mensagensRecebidas', ${m.id})" class="botao-vermelho mt-2">Apagar</button>
             </div>
-        `).join('') : '<p
+        `).join('') : '<p class="text-gray-500 text-center py-4">Nenhuma mensagem recebida.</p>';
+
+    // Carregar inscritos
+    const inscritos = JSON.parse(localStorage.getItem('inscritos')) || [];
+    document.getElementById('listaInscritos').innerHTML = inscritos.length ?
+        inscritos.map(i => `
+            <div class="border-b pb-3 mb-3">
+                <p><strong>Nome:</strong> ${i.nome}</p>
+                <p><strong>Telefone:</strong> ${i.telefone}</p>
+                <p><strong>E-mail:</strong> ${i.email || '-'}</p>
+                <p><strong>Cidade:</strong> ${i.cidade}</p>
+                <p><strong>Data inscrição:</strong> ${i.data}</p>
+                <button onclick="apagarItem('inscritos', ${i.id})" class="botao-vermelho mt-2">Apagar</button>
+            </div>
+        `).join('') : '<p class="text-gray-500 text-center py-4">Nenhuma inscrição realizada.</p>';
+
+    // Carregar células
+    const celulas = JSON.parse(localStorage.getItem('celulas')) || [];
+    document.getElementById('listaCelulasAdmin').innerHTML = celulas.length ?
+        celulas.map(c => `
+            <div class="border-b pb-3 mb-3 flex justify-between items-start">
+                <div>
+                    <p><strong>${c.nome}</strong></p>
+                    <p>Bairro: ${c.bairro}</p>
+                    <p>Responsável: ${c.responsavel}</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="abrirModalEditar(${JSON.stringify(c).replace(/"/g, '&quot;')})" class="botao-editar">Editar</button>
+                    <button onclick="apagarItem('celulas', ${c.id})" class="botao-vermelho">Excluir</button>
+                </div>
+            </div>
+        `).join('') : '<p class="text-gray-500 text-center py-4">Nenhuma célula cadastrada.</p>';
+
+    // Carregar vídeos
+    const videos = JSON.parse(localStorage.getItem('videos')) || [];
+    document.getElementById('listaVideosAdmin').innerHTML = videos.length ?
+        videos.map(v => `
+            <div class="border-b pb-3 mb-3 flex justify-between items-center">
+                <div>
+                    <strong>${v.titulo}</strong><br>
+                    <span class="text-sm text-gray-600">Tipo: ${v.tipo === 'youtube' ? 'YouTube' : 'Arquivo'}</span>
+                </div>
+                <button onclick="apagarItem('videos', ${v.id})" class="botao-vermelho">Excluir</button>
+            </div>
+        `).join('') : '<p class="text-gray-500 text-center py-4">Nenhum vídeo cadastrado.</p>';
+}
+
+// Alternar campos de vídeo
+document.getElementById('tipoVideo').addEventListener('change', () => {
+    const tipo = document.getElementById('tipoVideo').value;
+    document.getElementById('campoLink').classList.toggle('hidden', tipo !== 'youtube');
+    document.getElementById('campoArquivo').classList.toggle('hidden', tipo !== 'arquivo');
+});
+
+// Salvar configurações do site
+document.getElementById('formConfigSite').addEventListener('submit', e => {
+    e.preventDefault();
+    const dados = {
+        endereco: document.getElementById('confEndereco').value,
+        cidade: document.getElementById('confCidade').value,
+        cep: document.getElementById('confCep').value,
+        telefone: document.getElementById('confTelefone').value,
+        instagram: document.getElementById('confInstagram').value,
+        youtube: document.getElementById('confYoutube').value
+    };
+    localStorage.setItem('configSite', JSON.stringify(dados));
+    alert('Dados do site salvos com sucesso!');
+});
+
+// Salvar configuração de inscrições
+document.getElementById('formInscricaoConfig').addEventListener('submit', e => {
+    e.preventDefault();
+    const dados = {
+        ativo: document.getElementById('inscricaoAtiva').checked,
+        titulo: document.getElementById('inscricaoTitulo').value,
+        descricao: document.getElementById('inscricaoDesc').value,
+        valor: document.getElementById('inscricaoValor').value,
+        dataLimite: document.getElementById('inscricaoData').value
+    };
+    localStorage.setItem('configInscricao', JSON.stringify(dados));
+    alert('Configuração de inscrições salva!');
+});
+
+// Salvar nova célula
+document.getElementById('formCelula').addEventListener('submit', e => {
+    e.preventDefault();
+    const dados = {
+        id: Date.now(),
+        nome: document.getElementById('nomeCelula').value,
+        bairro: document.getElementById('bairroCelula').value,
+        endereco: document.getElementById('enderecoCelula').value,
+        responsavel: document.getElementById('respCelula').value,
+        dia: document.getElementById('diaCelula').value,
+        horario: document.getElementById('horaCelula').value,
+        contato: document.getElementById('contatoCelula').value
+    };
+    const lista = JSON.parse(localStorage.getItem('celulas')) || [];
+    lista.push(dados);
+    localStorage.setItem('celulas', JSON.stringify(lista));
+    alert('Célula cadastrada!');
+    e.target.reset();
+    carregarDadosAdmin();
+});
+
+// Salvar edição de célula
+document.getElementById('formEditarCelula').addEventListener('submit', e => {
+    e.preventDefault();
+    const id = parseInt(document.getElementById('editarId').value);
+    const lista = JSON.parse(localStorage.getItem('celulas')) || [];
+    const novaLista = lista.map(c => c.id === id ? {
+        ...c,
+        nome: document.getElementById('editarNome').value,
+        bairro: document.getElementById('editarBairro').value,
+        endereco: document.getElementById('editarEndereco').value,
+        responsavel: document.getElementById('editarResp').value,
+        dia: document.getElementById('editarDia').value,
+        horario: document.getElementById('editarHora').value,
+        contato: document.getElementById('editarContato').value
+    } : c);
+    localStorage.setItem('celulas', JSON.stringify(novaLista));
+    alert('Célula atualizada!');
+    fecharModalEditar();
+    carregarDadosAdmin();
+});
+
+// Salvar notícia
+document.getElementById('formNoticia').addEventListener('submit', e => {
+    e.preventDefault();
+    const dados = { id: Date.now(), titulo: document.getElementById('tituloNoticia').value, data: document.getElementById('dataNoticia').value, conteudo: document.getElementById('conteudoNoticia').value };
+    const arq = document.getElementById('imgNoticia').files[0];
+    const salvar = () => { const l = JSON.parse(localStorage.getItem('noticias'))||[]; l.unshift(dados); localStorage.setItem('noticias',JSON.stringify(l)); alert('Salvo!'); e.target.reset(); };
+    arq ? lerImagem(arq, u=>{dados.imagem=u;salvar()}) : salvar();
+});
+
+// Salvar evento
+document.getElementById('formEvento').addEventListener('submit', e => {
+    e.preventDefault();
+    const dados = { id: Date.now(), nome: document.getElementById('nomeEvento').value, data: document.getElementById('dataEvento').value, hora: document.getElementById('horaEvento').value, local: document.getElementById('localEvento').value, descricao: document.getElementById('descEvento').value };
+    const arq = document.getElementById('imgEvento').files[0];
+    const salvar = () => { const l = JSON.parse(localStorage.getItem('eventos'))||[]; l.unshift(dados); localStorage.setItem('eventos',JSON.stringify(l)); alert('Salvo!'); e.target.reset(); };
+    arq ? lerImagem(arq, u=>{dados.imagem=u;salvar()}) : salvar();
+});
+
+// Salvar vídeo
+document.getElementById('formVideo').addEventListener('submit', e => {
+    e.preventDefault();
+    const tipo = document.getElementById('tipoVideo').value;
+    const titulo = document.getElementById('tituloVideo').value;
+    const videos = JSON.parse(localStorage.getItem('videos')) || [];
+
+    if (tipo === 'youtube') {
+        const url = document.getElementById('linkVideo').value;
+        if (!url) return alert('Insira o link do YouTube!');
+        videos.unshift({ id: Date.now(), titulo, tipo, url });
+        localStorage.setItem('videos', JSON.stringify(videos));
+        alert('Vídeo cadastrado!');
+        e.target.reset();
+        carregarDadosAdmin();
+    } else {
+        const arquivo = document.getElementById('arquivoVideo').files[0];
+        if (!arquivo) return alert('Selecione o arquivo!');
+        lerImagem(arquivo, (url) => {
+            videos.unshift({ id: Date.now(), titulo, tipo, arquivo: url });
+            localStorage.setItem('videos', JSON.stringify(videos));
+            alert('Vídeo cadastrado!');
+            e.target.reset();
+            carregarDadosAdmin();
+        });
+    }
+});
+</script>
+</body>
+</html>
