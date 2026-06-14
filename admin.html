@@ -29,11 +29,13 @@
         .botao-vermelho { @apply bg-red-600 hover:bg-red-700 text-branco px-3 py-1 rounded text-sm; }
         .botao-editar { @apply bg-yellow-500 hover:bg-yellow-600 text-branco px-3 py-1 rounded text-sm; }
         .botao-sucesso { @apply bg-sucesso hover:bg-green-700 text-branco px-3 py-1 rounded text-sm; }
+        .botao-secundario { @apply bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded text-sm; }
         .logo { height: 36px; width: auto; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 
+<!-- Tela de Login -->
 <div id="telaLogin" class="max-w-sm mx-auto mt-20 bg-branco p-6 rounded-lg sombra text-center">
     <img src="logo.png" alt="Paz Church Belterra" class="h-16 w-auto mx-auto mb-4">
     <h2 class="text-xl font-bold text-principal mb-4">Acesso ao Painel</h2>
@@ -42,6 +44,7 @@
     <p class="text-xs text-center mt-3 text-gray-500">Senha padrão: paz2026</p>
 </div>
 
+<!-- Painel Principal -->
 <div id="painelPrincipal" class="hidden container mx-auto p-4 mt-6">
     <header class="bg-principal text-branco p-4 rounded-lg flex justify-between items-center mb-6">
         <div class="flex items-center gap-3">
@@ -49,7 +52,7 @@
             <h1 class="text-xl font-bold">Painel de Gerenciamento</h1>
         </div>
         <div>
-            <a href="index.html" class="text-sm underline mr-4">Ver Site</a>
+            <a href="index.html" target="_blank" class="text-sm underline mr-4">Ver Site</a>
             <button onclick="sair()" class="text-sm underline">Sair</button>
         </div>
     </header>
@@ -72,43 +75,138 @@
 
                 <h4 class="font-semibold mt-3 text-principal">Lotes de Ingresso</h4>
                 <div id="lotesContainer"></div>
-                <button type="button" onclick="adicionarLote()" class="botao-secundario w-full text-center">+ Adicionar Lote</button>
+                <button type="button" onclick="adicionarLote()" class="botao-secundario w-full text-center mt-2">+ Adicionar Novo Lote</button>
 
                 <button type="submit" class="botao w-full mt-4">Salvar Configuração</button>
             </form>
         </div>
 
-        <!-- Dados do Site e Outros Cadastros -->
+        <!-- Dados Gerais do Site -->
         <div class="bg-branco p-5 rounded-lg sombra">
             <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Dados do Site</h3>
             <form id="formConfigSite" class="space-y-3">
-                <input type="text" id="confEndereco" placeholder="Endereço" class="w-full border rounded p-2" required>
+                <input type="text" id="confEndereco" placeholder="Endereço completo" class="w-full border rounded p-2" required>
                 <input type="text" id="confCidade" placeholder="Cidade/UF" class="w-full border rounded p-2" required>
                 <input type="text" id="confCep" placeholder="CEP" class="w-full border rounded p-2" required>
-                <input type="text" id="confTelefone" placeholder="Telefone" class="w-full border rounded p-2" required>
-                <input type="url" id="confInstagram" placeholder="Link Instagram" class="w-full border rounded p-2">
-                <input type="url" id="confYoutube" placeholder="Link YouTube" class="w-full border rounded p-2">
+                <input type="text" id="confTelefone" placeholder="Telefone/WhatsApp" class="w-full border rounded p-2" required>
+                <input type="url" id="confInstagram" placeholder="Link do Instagram" class="w-full border rounded p-2">
+                <input type="url" id="confYoutube" placeholder="Link do YouTube" class="w-full border rounded p-2">
                 <button type="submit" class="botao w-full">Salvar Alterações</button>
             </form>
         </div>
     </div>
 
-    <!-- Lista de Inscritos -->
-    <div class="bg-branco p-5 rounded-lg sombra mb-8">
-        <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Inscritos no Evento</h3>
-        <div id="listaInscritos"></div>
+    <!-- Seção de Cadastros -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Cadastrar Notícia -->
+        <div class="bg-branco p-5 rounded-lg sombra">
+            <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Cadastrar Notícia</h3>
+            <form id="formNoticia" class="space-y-3">
+                <input type="text" id="tituloNoticia" placeholder="Título" class="w-full border rounded p-2" required>
+                <input type="date" id="dataNoticia" class="w-full border rounded p-2" required>
+                <input type="file" accept="image/*" id="imgNoticia" class="w-full text-sm">
+                <textarea rows="3" id="conteudoNoticia" placeholder="Conteúdo da notícia" class="w-full border rounded p-2" required></textarea>
+                <button type="submit" class="botao w-full">Salvar Notícia</button>
+            </form>
+        </div>
+
+        <!-- Cadastrar Evento -->
+        <div class="bg-branco p-5 rounded-lg sombra">
+            <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Cadastrar Evento</h3>
+            <form id="formEvento" class="space-y-3">
+                <input type="text" id="nomeEvento" placeholder="Nome do Evento" class="w-full border rounded p-2" required>
+                <input type="date" id="dataEvento" class="w-full border rounded p-2" required>
+                <input type="time" id="horaEvento" class="w-full border rounded p-2" required>
+                <input type="text" id="localEvento" placeholder="Local" class="w-full border rounded p-2" required>
+                <input type="file" accept="image/*" id="imgEvento" class="w-full text-sm">
+                <textarea rows="2" id="descEvento" placeholder="Descrição" class="w-full border rounded p-2"></textarea>
+                <button type="submit" class="botao w-full">Salvar Evento</button>
+            </form>
+        </div>
+
+        <!-- Cadastrar Célula -->
+        <div class="bg-branco p-5 rounded-lg sombra">
+            <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Cadastrar Célula</h3>
+            <form id="formCelula" class="space-y-3">
+                <input type="text" id="nomeCelula" placeholder="Nome da Célula" class="w-full border rounded p-2" required>
+                <input type="text" id="bairroCelula" placeholder="Bairro" class="w-full border rounded p-2" required>
+                <input type="text" id="enderecoCelula" placeholder="Endereço completo" class="w-full border rounded p-2" required>
+                <input type="text" id="respCelula" placeholder="Responsável" class="w-full border rounded p-2" required>
+                <input type="text" id="diaCelula" placeholder="Dia da Semana" class="w-full border rounded p-2" required>
+                <input type="time" id="horaCelula" class="w-full border rounded p-2" required>
+                <input type="tel" id="contatoCelula" placeholder="Contato" class="w-full border rounded p-2" required>
+                <button type="submit" class="botao w-full">Salvar Célula</button>
+            </form>
+        </div>
+
+        <!-- Adicionar Vídeo -->
+        <div class="bg-branco p-5 rounded-lg sombra">
+            <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Adicionar Vídeo</h3>
+            <form id="formVideo" class="space-y-3">
+                <input type="text" id="tituloVideo" placeholder="Título do vídeo" class="w-full border rounded p-2" required>
+                <select id="tipoVideo" class="w-full border rounded p-2">
+                    <option value="youtube">Link do YouTube</option>
+                    <option value="arquivo">Arquivo próprio</option>
+                </select>
+                <div id="campoLink">
+                    <input type="url" id="linkVideo" placeholder="Link do YouTube" class="w-full border rounded p-2">
+                </div>
+                <div id="campoArquivo" class="hidden">
+                    <input type="file" accept="video/*" id="arquivoVideo" class="w-full text-sm">
+                </div>
+                <button type="submit" class="botao w-full">Salvar Vídeo</button>
+            </form>
+        </div>
     </div>
 
-    <!-- Outras seções de gerenciamento mantidas -->
+    <!-- Listas de Dados -->
     <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <!-- Inscritos -->
         <div class="bg-branco p-5 rounded-lg sombra">
-            <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Células Cadastradas</h3>
-            <div id="listaCelulasAdmin"></div>
+            <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Inscritos no Evento</h3>
+            <div id="listaInscritos"></div>
         </div>
+
+        <!-- Mensagens Recebidas -->
         <div class="bg-branco p-5 rounded-lg sombra">
             <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Mensagens Recebidas</h3>
             <div id="listaMensagens"></div>
         </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <!-- Células Cadastradas -->
+        <div class="bg-branco p-5 rounded-lg sombra">
+            <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Células Cadastradas</h3>
+            <div id="listaCelulasAdmin"></div>
+        </div>
+
+        <!-- Vídeos Cadastrados -->
+        <div class="bg-branco p-5 rounded-lg sombra">
+            <h3 class="text-lg font-semibold text-principal mb-4 border-b pb-2">Vídeos Cadastrados</h3>
+            <div id="listaVideosAdmin"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Célula -->
+<div id="modalEditarCelula" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+    <div class="bg-branco p-6 rounded-lg w-full max-w-md">
+        <h3 class="text-xl font-bold text-principal mb-4">Editar Célula</h3>
+        <form id="formEditarCelula" class="space-y-3">
+            <input type="hidden" id="editarId">
+            <input type="text" id="editarNome" class="w-full border rounded p-2" required>
+            <input type="text" id="editarBairro" class="w-full border rounded p-2" required>
+            <input type="text" id="editarEndereco" class="w-full border rounded p-2" required>
+            <input type="text" id="editarResp" class="w-full border rounded p-2" required>
+            <input type="text" id="editarDia" class="w-full border rounded p-2" required>
+            <input type="time" id="editarHora" class="w-full border rounded p-2" required>
+            <input type="tel" id="editarContato" class="w-full border rounded p-2" required>
+            <div class="flex gap-2 mt-4">
+                <button type="submit" class="botao flex-1">Salvar</button>
+                <button type="button" onclick="fecharModalEditar()" class="border border-gray-300 rounded p-2 flex-1">Cancelar</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -122,7 +220,9 @@ function verificarSenha() {
         document.getElementById('telaLogin').classList.add('hidden');
         document.getElementById('painelPrincipal').classList.remove('hidden');
         carregarDadosAdmin();
-    } else alert('Senha incorreta!');
+    } else {
+        alert('Senha incorreta!');
+    }
 }
 
 function sair() {
@@ -138,114 +238,5 @@ function adicionarLote(dados = {}) {
     div.className = 'p-3 border rounded mb-3 bg-gray-50';
     div.innerHTML = `
         <h5 class="font-medium mb-2">Lote ${contadorLotes}</h5>
-        <input type="text" placeholder="Nome do lote" class="w-full border rounded p-2 mb-2 lote-nome" value="${dados.nome || ''}">
-        <input type="number" step="0.01" placeholder="Valor R$" class="w-full border rounded p-2 mb-2 lote-valor" value="${dados.valor || ''}">
-        <input type="number" placeholder="Quantidade total" class="w-full border rounded p-2 mb-2 lote-quantidade" value="${dados.quantidade || ''}">
-        <input type="datetime-local" placeholder="Data de término" class="w-full border rounded p-2 mb-2 lote-data" value="${dados.dataFim || ''}">
-        <input type="hidden" class="lote-vendidos" value="${dados.vendidos || 0}">
-        <button type="button" onclick="removerLote(this)" class="text-red-600 text-sm">Remover lote</button>
-    `;
-    container.appendChild(div);
-}
-
-function removerLote(botao) {
-    botao.parentElement.remove();
-}
-
-function carregarDadosAdmin() {
-    // Configurações do site
-    const conf = JSON.parse(localStorage.getItem('configSite')) || {
-        endereco: "Estrada UM, S/N", cidade: "Belterra - PA", cep: "68143-000", telefone: "(93) 99999-0000"
-    };
-    document.getElementById('confEndereco').value = conf.endereco;
-    document.getElementById('confCidade').value = conf.cidade;
-    document.getElementById('confCep').value = conf.cep;
-    document.getElementById('confTelefone').value = conf.telefone;
-    document.getElementById('confInstagram').value = conf.instagram || '';
-    document.getElementById('confYoutube').value = conf.youtube || '';
-
-    // Configuração de inscrições
-    const confIns = JSON.parse(localStorage.getItem('configInscricao')) || { ativo: false, lotes: [] };
-    document.getElementById('inscricaoAtiva').checked = confIns.ativo;
-    document.getElementById('inscricaoTitulo').value = confIns.titulo || '';
-    document.getElementById('inscricaoDesc').value = confIns.descricao || '';
-    document.getElementById('pixChave').value = confIns.pixChave || '';
-    document.getElementById('pixCopiaCola').value = confIns.pixCopiaCola || '';
-
-    document.getElementById('lotesContainer').innerHTML = '';
-    contadorLotes = 0;
-    confIns.lotes.forEach(lote => adicionarLote(lote));
-
-    // Lista de inscritos
-    const inscritos = JSON.parse(localStorage.getItem('inscritos')) || [];
-    document.getElementById('listaInscritos').innerHTML = inscritos.length ?
-        inscritos.map(i => `
-            <div class="border-b pb-4 mb-4">
-                <p><strong>Nome:</strong> ${i.nome}</p>
-                <p><strong>CPF:</strong> ${i.cpf} | <strong>Nascimento:</strong> ${i.nascimento}</p>
-                <p><strong>WhatsApp:</strong> ${i.whatsapp} | <strong>Lote:</strong> ${i.lote} | <strong>Valor:</strong> R$ ${i.valor.toFixed(2).replace('.', ',')}</p>
-                <p><strong>Status:</strong> <span class="font-semibold ${i.status === 'Confirmado' ? 'text-sucesso' : 'text-alerta'}">${i.status}</span></p>
-                <p><strong>Data:</strong> ${i.data}</p>
-                <div class="flex gap-2 mt-2">
-                    <button onclick="verComprovante('${i.comprovante}')" class="botao text-sm">Ver Comprovante</button>
-                    <button onclick="alterarStatus(${i.id}, 'Confirmado')" class="botao-sucesso text-sm">Confirmar Pagamento</button>
-                    <button onclick="alterarStatus(${i.id}, 'Recusado')" class="botao-vermelho text-sm">Recusar</button>
-                </div>
-            </div>
-        `).join('') : '<p class="text-gray-500 text-center py-4">Nenhuma inscrição recebida.</p>';
-}
-
-function verComprovante(url) {
-    const novaJanela = window.open();
-    novaJanela.document.write(`<img src="${url}" style="max-width:100%;height:auto;">`);
-}
-
-function alterarStatus(id, novoStatus) {
-    const lista = JSON.parse(localStorage.getItem('inscritos')) || [];
-    const novaLista = lista.map(i => i.id === id ? { ...i, status: novoStatus } : i);
-    localStorage.setItem('inscritos', JSON.stringify(novaLista));
-    carregarDadosAdmin();
-}
-
-// Salvar configurações
-document.getElementById('formInscricaoConfig').addEventListener('submit', e => {
-    e.preventDefault();
-    const lotes = [];
-    document.querySelectorAll('#lotesContainer > div').forEach(div => {
-        lotes.push({
-            nome: div.querySelector('.lote-nome').value,
-            valor: parseFloat(div.querySelector('.lote-valor').value),
-            quantidade: parseInt(div.querySelector('.lote-quantidade').value),
-            dataFim: div.querySelector('.lote-data').value,
-            vendidos: parseInt(div.querySelector('.lote-vendidos').value) || 0
-        });
-    });
-
-    const dados = {
-        ativo: document.getElementById('inscricaoAtiva').checked,
-        titulo: document.getElementById('inscricaoTitulo').value,
-        descricao: document.getElementById('inscricaoDesc').value,
-        pixChave: document.getElementById('pixChave').value,
-        pixCopiaCola: document.getElementById('pixCopiaCola').value,
-        lotes: lotes
-    };
-    localStorage.setItem('configInscricao', JSON.stringify(dados));
-    alert('Configuração salva com sucesso!');
-});
-
-document.getElementById('formConfigSite').addEventListener('submit', e => {
-    e.preventDefault();
-    const dados = {
-        endereco: document.getElementById('confEndereco').value,
-        cidade: document.getElementById('confCidade').value,
-        cep: document.getElementById('confCep').value,
-        telefone: document.getElementById('confTelefone').value,
-        instagram: document.getElementById('confInstagram').value,
-        youtube: document.getElementById('confYoutube').value
-    };
-    localStorage.setItem('configSite', JSON.stringify(dados));
-    alert('Dados do site salvos!');
-});
-</script>
-</body>
-</html>
+        <input type="text" placeholder="Nome do lote" class="w-full border rounded p-2 mb-2 lote-nome" value="${dados.nome || ''}" required>
+        <input type="number" step="0.01" placeholder="Valor R$" class="w-full border rounded p-2 mb-2 lote-valor"

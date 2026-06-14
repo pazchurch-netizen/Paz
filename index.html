@@ -102,7 +102,7 @@
             <div id="estadoInscricao"></div>
         </div>
 
-        <!-- Vídeos e demais seções mantidas -->
+        <!-- Vídeos Recentes -->
         <div class="mb-12">
             <h3 class="text-xl font-bold text-principal mb-4">Vídeos e Mensagens</h3>
             <div id="listaVideosInicio" class="grid md:grid-cols-2 gap-6"></div>
@@ -160,7 +160,7 @@
     </div>
 </div>
 
-<!-- Outras seções mantidas -->
+<!-- Seção Notícias -->
 <section id="noticias" class="secao-oculta py-12 bg-gray-50">
     <div class="container mx-auto px-4">
         <h2 class="text-2xl md:text-3xl font-bold text-principal mb-6">Últimas Notícias</h2>
@@ -168,13 +168,15 @@
     </div>
 </section>
 
+<!-- Seção Eventos -->
 <section id="eventos" class="secao-oculta py-12 bg-branco">
     <div class="container mx-auto px-4">
-        <h2 class="text-2xl md:text-3xl font-bold text-principal mb-6">Todos os Eventos</h2>
+        <h2 class="text-2xl md:text-3xl font-bold text-principal mb-6">Próximos Eventos</h2>
         <div id="listaEventos" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
 </section>
 
+<!-- Seção Células -->
 <section id="celulas" class="secao-oculta py-12 bg-gray-50">
     <div class="container mx-auto px-4">
         <h2 class="text-2xl md:text-3xl font-bold text-principal mb-6">Encontre uma Célula</h2>
@@ -190,6 +192,7 @@
     </div>
 </section>
 
+<!-- Seção Galeria -->
 <section id="galeria" class="secao-oculta py-12 bg-branco">
     <div class="container mx-auto px-4">
         <h2 class="text-2xl md:text-3xl font-bold text-principal mb-6">Galeria de Fotos</h2>
@@ -197,6 +200,7 @@
     </div>
 </section>
 
+<!-- Seção Contato -->
 <section id="contato" class="secao-oculta py-12 bg-gray-50">
     <div class="container mx-auto px-4">
         <h2 class="text-2xl md:text-3xl font-bold text-principal mb-6">Localização e Contato</h2>
@@ -207,7 +211,6 @@
                 <p class="mb-3"><i class="fa fa-map text-principal mr-2"></i> <span id="cidadeSite"></span></p>
                 <p class="mb-3"><i class="fa fa-envelope text-principal mr-2"></i> CEP: <span id="cepSite"></span></p>
                 <p class="mb-3"><i class="fa fa-phone text-principal mr-2"></i> <span id="telefoneSite"></span></p>
-                <p class="mb-4"><i class="fa fa-clock text-principal mr-2"></i> Veja nossos horários acima</p>
                 <h4 class="font-semibold mt-6 mb-3">Redes Sociais</h4>
                 <div class="flex gap-4 text-2xl text-principal">
                     <a href="" id="linkContatoInstagram" target="_blank" class="hover:text-escuro"><i class="fa-brands fa-instagram"></i></a>
@@ -264,8 +267,6 @@ function carregarConfiguracoes() {
     document.getElementById('cidadeSite').textContent = conf.cidade;
     document.getElementById('cepSite').textContent = conf.cep;
     document.getElementById('telefoneSite').textContent = conf.telefone;
-    document.getElementById('linkInstagram').href = conf.instagram;
-    document.getElementById('linkYoutube').href = conf.youtube;
     document.getElementById('linkContatoInstagram').href = conf.instagram;
     document.getElementById('linkContatoYoutube').href = conf.youtube;
     document.getElementById('enderecoRodape').textContent = conf.endereco;
@@ -274,6 +275,7 @@ function carregarConfiguracoes() {
 }
 
 function obterLoteAtivo(lotes) {
+    if (!lotes || lotes.length === 0) return null;
     const agora = new Date();
     return lotes.find(lote => {
         const fim = new Date(lote.dataFim);
@@ -331,7 +333,7 @@ document.getElementById('formDados').addEventListener('submit', e => {
     e.preventDefault();
     const dadosIns = JSON.parse(localStorage.getItem('configInscricao'));
     const loteAtivo = obterLoteAtivo(dadosIns.lotes);
-    if (!loteAtivo) return alert('Inscrições encerradas!');
+    if (!loteAtivo) return alert('Inscrições encerradas ou esgotadas!');
 
     dadosTemporarios = {
         nome: document.getElementById('nomeIns').value,
@@ -344,9 +346,9 @@ document.getElementById('formDados').addEventListener('submit', e => {
     };
 
     document.getElementById('valorPix').textContent = `R$ ${loteAtivo.valor.toFixed(2).replace('.', ',')}`;
-    document.getElementById('chavePix').textContent = dadosIns.pixChave;
-    document.getElementById('codigoPix').textContent = dadosIns.pixCopiaCola;
-    QRCode.toCanvas(document.getElementById('qrcodePix'), dadosIns.pixCopiaCola, { width: 180 });
+    document.getElementById('chavePix').textContent = dadosIns.pixChave || '';
+    document.getElementById('codigoPix').textContent = dadosIns.pixCopiaCola || '';
+    QRCode.toCanvas(document.getElementById('qrcodePix'), dadosIns.pixCopiaCola || '', { width: 180 });
 
     fecharModal('modalDados');
     abrirModal('modalPagamento');
@@ -355,12 +357,12 @@ document.getElementById('formDados').addEventListener('submit', e => {
 function copiarPix() {
     const codigo = document.getElementById('codigoPix').textContent;
     navigator.clipboard.writeText(codigo);
-    alert('Código PIX copiado!');
+    alert('Código PIX copiado para a área de transferência!');
 }
 
 function finalizarInscricao() {
     const comprovante = document.getElementById('comprovantePix').files[0];
-    if (!comprovante) return alert('Selecione o comprovante!');
+    if (!comprovante) return alert('Selecione o arquivo do comprovante!');
 
     const leitor = new FileReader();
     leitor.onload = function(e) {
@@ -378,7 +380,7 @@ function finalizarInscricao() {
 
         const config = JSON.parse(localStorage.getItem('configInscricao'));
         const loteIndex = config.lotes.findIndex(l => l.nome === dadosTemporarios.lote);
-        config.lotes[loteIndex].vendidos += 1;
+        if (loteIndex >= 0) config.lotes[loteIndex].vendidos += 1;
         localStorage.setItem('configInscricao', JSON.stringify(config));
 
         fecharModal('modalPagamento');
@@ -394,28 +396,51 @@ function extrairIdYouTube(url) {
     return (match && match[2].length === 11) ? match[2] : null;
 }
 
+function buscarCelula() {
+    const termo = document.getElementById('buscaBairro').value.trim().toLowerCase();
+    const celulas = JSON.parse(localStorage.getItem('celulas')) || [];
+    const resultado = celulas.filter(c => c.bairro.toLowerCase().includes(termo));
+    const div = document.getElementById('resultadoBusca');
+    if (resultado.length > 0) {
+        div.innerHTML = resultado.map(c => `
+            <div class="p-3 border rounded mb-2">
+                <strong>${c.nome}</strong><br>
+                Bairro: ${c.bairro}<br>
+                Endereço: ${c.endereco}<br>
+                Dia: ${c.dia} às ${c.horario}<br>
+                Contato: ${c.contato}
+            </div>
+        `).join('');
+        div.className = 'mt-4 p-3 rounded bg-claro';
+    } else {
+        div.textContent = 'Nenhuma célula encontrada nesse bairro.';
+        div.className = 'mt-4 p-3 rounded bg-red-50 text-red-700';
+    }
+    div.classList.remove('hidden');
+}
+
+document.getElementById('formContato').addEventListener('submit', e => {
+    e.preventDefault();
+    const mensagem = {
+        id: Date.now(),
+        nome: document.getElementById('nome').value,
+        email: document.getElementById('email').value,
+        telefone: document.getElementById('telefone').value,
+        texto: document.getElementById('mensagem').value,
+        data: new Date().toLocaleString('pt-BR')
+    };
+    const lista = JSON.parse(localStorage.getItem('mensagensRecebidas')) || [];
+    lista.unshift(mensagem);
+    localStorage.setItem('mensagensRecebidas', JSON.stringify(lista));
+    alert('Mensagem enviada com sucesso!');
+    e.target.reset();
+});
+
 function carregarTudo() {
     carregarConfiguracoes();
     carregarInscricao();
+
     const noticias = JSON.parse(localStorage.getItem('noticias')) || [];
-    const eventos = JSON.parse(localStorage.getItem('eventos')) || [];
-    const celulas = JSON.parse(localStorage.getItem('celulas')) || [];
-    const galeria = JSON.parse(localStorage.getItem('galeria')) || [];
-    const videos = JSON.parse(localStorage.getItem('videos')) || [];
-
-    document.getElementById('listaVideosInicio').innerHTML = videos.length ?
-        videos.slice(0, 2).map(v => `
-            <div class="bg-branco rounded-lg sombra p-4">
-                <h4 class="font-semibold text-principal mb-3">${v.titulo}</h4>
-                <div class="relative pt-[56.25%] overflow-hidden rounded">
-                    ${v.tipo === 'youtube' 
-                        ? `<iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${extrairIdYouTube(v.url)}" allowfullscreen></iframe>`
-                        : `<video class="absolute inset-0 w-full h-full" src="${v.arquivo}" controls></video>`
-                    }
-                </div>
-            </div>
-        `).join('') : '<p class="col-span-full text-center text-gray-500 py-6">Nenhum vídeo cadastrado ainda.</p>';
-
     document.getElementById('listaNoticias').innerHTML = noticias.length ? noticias.map(n => `
         <div class="bg-branco rounded-lg sombra overflow-hidden">
             ${n.imagem ? `<img src="${n.imagem}" alt="${n.titulo}" class="w-full h-40 object-cover">` : `<div class="h-40 bg-claro flex items-center justify-center text-principal">Sem imagem</div>`}
@@ -427,6 +452,20 @@ function carregarTudo() {
         </div>
     `).join('') : '<p class="col-span-full text-center text-gray-500 py-10">Nenhuma notícia cadastrada.</p>';
 
+    const eventos = JSON.parse(localStorage.getItem('eventos')) || [];
+    document.getElementById('listaEventos').innerHTML = eventos.length ? eventos.map(e => `
+        <div class="bg-branco rounded-lg sombra overflow-hidden">
+            ${e.imagem ? `<img src="${e.imagem}" alt="${e.nome}" class="w-full h-40 object-cover">` : `<div class="h-40 bg-claro flex items-center justify-center text-principal">Sem imagem</div>`}
+            <div class="p-4">
+                <h3 class="font-bold text-lg text-principal">${e.nome}</h3>
+                <p class="text-sm text-gray-600">📅 ${e.data} às ${e.hora}</p>
+                <p class="text-sm text-gray-600">📍 ${e.local}</p>
+                <p class="mt-2">${e.descricao || ''}</p>
+            </div>
+        </div>
+    `).join('') : '<p class="col-span-full text-center text-gray-500 py-10">Nenhum evento cadastrado.</p>';
+
+    const celulas = JSON.parse(localStorage.getItem('celulas')) || [];
     document.getElementById('listaCelulas').innerHTML = celulas.length ? celulas.map(c => `
         <div class="bg-branco p-5 rounded-lg sombra">
             <h4 class="font-bold text-lg text-principal">${c.nome}</h4>
@@ -437,6 +476,19 @@ function carregarTudo() {
             <p><strong>Contato:</strong> ${c.contato}</p>
         </div>
     `).join('') : '<p class="col-span-full text-center text-gray-500 py-10">Nenhuma célula cadastrada.</p>';
+
+    const videos = JSON.parse(localStorage.getItem('videos')) || [];
+    document.getElementById('listaVideosInicio').innerHTML = videos.length ? videos.slice(0, 2).map(v => `
+        <div class="bg-branco rounded-lg sombra p-4">
+            <h4 class="font-semibold text-principal mb-3">${v.titulo}</h4>
+            <div class="relative pt-[56.25%] overflow-hidden rounded">
+                ${v.tipo === 'youtube' 
+                    ? `<iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${extrairIdYouTube(v.url)}" allowfullscreen loading="lazy"></iframe>`
+                    : `<video class="absolute inset-0 w-full h-full" src="${v.arquivo}" controls></video>`
+                }
+            </div>
+        </div>
+    `).join('') : '<p class="col-span-full text-center text-gray-500 py-6">Nenhum vídeo cadastrado.</p>';
 }
 
 document.getElementById('menuBtn').addEventListener('click', () => {
