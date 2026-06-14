@@ -31,11 +31,12 @@
         .logo { height: 42px; width: auto; }
         .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
         .video-container iframe, .video-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .contagem { font-size: 1.8rem; font-weight: bold; color: #0047AB; }
     </style>
 </head>
 <body class="bg-gray-50 text-texto">
 
-<!-- Cabeçalho / Menu -->
+<!-- Cabeçalho -->
 <header class="bg-branco sombra sticky top-0 z-50">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
         <div class="flex items-center gap-3">
@@ -45,7 +46,6 @@
                 <p class="text-xs text-gray-500">Belterra - PA</p>
             </div>
         </div>
-
         <nav class="hidden md:flex gap-4">
             <a href="#inicio" onclick="mostrarSecao('inicio')" class="font-medium hover:text-principal transition">Início</a>
             <a href="#noticias" onclick="mostrarSecao('noticias')" class="font-medium hover:text-principal transition">Notícias</a>
@@ -55,12 +55,10 @@
             <a href="#contato" onclick="mostrarSecao('contato')" class="font-medium hover:text-principal transition">Contato</a>
             <a href="admin.html" class="botao text-sm">Admin</a>
         </nav>
-
         <button id="menuBtn" class="md:hidden text-2xl text-principal">
             <i class="fa fa-bars"></i>
         </button>
     </div>
-
     <div id="menuMobile" class="hidden bg-branco border-t md:hidden">
         <div class="container mx-auto px-4 py-3 flex flex-col gap-2">
             <a href="#inicio" onclick="mostrarSecao('inicio'); fecharMenuMobile()" class="py-2 border-b hover:text-principal">Início</a>
@@ -74,9 +72,8 @@
     </div>
 </header>
 
-<!-- Tela Início -->
+<!-- Página Início -->
 <section id="inicio" class="pb-12">
-    <!-- Banner Principal -->
     <div class="relative h-[320px] md:h-[400px] w-full overflow-hidden">
         <div class="banner-gradiente absolute inset-0 z-10"></div>
         <img src="capa.png" alt="Paz Church Belterra" class="w-full h-full object-cover">
@@ -92,12 +89,19 @@
     </div>
 
     <div class="container mx-auto px-4 mt-8">
-        <!-- Seção de Vídeos na Página Inicial -->
+        <!-- Área de Inscrição -->
+        <div id="secaoInscricao" class="hidden mb-12 bg-claro p-6 rounded-lg sombra border-l-4 border-principal">
+            <h3 class="text-xl font-bold text-principal mb-3" id="tituloInscricao"></h3>
+            <p class="mb-2" id="descInscricao"></p>
+            <p class="text-lg font-semibold mb-3">Valor: <span id="valorInscricao" class="text-green-700"></span></p>
+            <div class="contagem mb-4" id="contagemRegressiva"></div>
+            <button onclick="abrirFormInscricao()" class="botao">Fazer Inscrição</button>
+        </div>
+
+        <!-- Vídeos -->
         <div class="mb-12">
             <h3 class="text-xl font-bold text-principal mb-4">Vídeos e Mensagens</h3>
-            <div id="listaVideosInicio" class="grid md:grid-cols-2 gap-6">
-                <!-- Vídeos carregados do painel -->
-            </div>
+            <div id="listaVideosInicio" class="grid md:grid-cols-2 gap-6"></div>
         </div>
 
         <!-- Horários -->
@@ -123,17 +127,16 @@
                     <a href="#eventos" onclick="mostrarSecao('eventos')" class="text-principal font-medium hover:underline">Ver todos os eventos →</a>
                 </div>
             </div>
-
             <div>
                 <h3 class="text-xl font-bold text-principal mb-4">Acompanhe-nos</h3>
                 <div class="bg-branco rounded-lg sombra p-5 space-y-4">
-                    <a href="https://www.instagram.com/pazchurchbelterra?igsh=enE1cm5sNDJwOXQz" target="_blank" class="flex items-center gap-3 p-2 hover:bg-claro rounded transition">
+                    <a href="" id="linkInstagram" target="_blank" class="flex items-center gap-3 p-2 hover:bg-claro rounded transition">
                         <i class="fa-brands fa-instagram text-xl text-principal"></i>
-                        <span>@pazchurchbelterra</span>
+                        <span>Instagram</span>
                     </a>
-                    <a href="https://youtube.com/@pazchurchbelterra2589?si=IayYGpX-ZZBOw6jQ" target="_blank" class="flex items-center gap-3 p-2 hover:bg-claro rounded transition">
+                    <a href="" id="linkYoutube" target="_blank" class="flex items-center gap-3 p-2 hover:bg-claro rounded transition">
                         <i class="fa-brands fa-youtube text-xl text-principal"></i>
-                        <span>@pazchurchbelterra2589</span>
+                        <span>YouTube</span>
                     </a>
                     <a href="#celulas" onclick="mostrarSecao('celulas')" class="flex items-center gap-3 p-2 hover:bg-claro rounded transition">
                         <i class="fa fa-heart text-xl text-principal"></i>
@@ -149,7 +152,22 @@
     </div>
 </section>
 
-<!-- Seções Ocultas -->
+<!-- Modal Inscrição -->
+<div id="modalInscricao" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+    <div class="bg-branco p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <h3 class="text-xl font-bold text-principal mb-4">Formulário de Inscrição</h3>
+        <form id="formInscricao" class="space-y-3">
+            <input type="text" id="nomeIns" placeholder="Nome completo" class="w-full border rounded p-2" required>
+            <input type="tel" id="telefoneIns" placeholder="Telefone / WhatsApp" class="w-full border rounded p-2" required>
+            <input type="email" id="emailIns" placeholder="E-mail" class="w-full border rounded p-2">
+            <input type="text" id="cidadeIns" placeholder="Cidade" class="w-full border rounded p-2" required>
+            <button type="submit" class="botao w-full">Enviar Inscrição</button>
+            <button type="button" onclick="fecharModal()" class="w-full border border-gray-300 rounded p-2 hover:bg-gray-100">Cancelar</button>
+        </form>
+    </div>
+</div>
+
+<!-- Seções -->
 <section id="noticias" class="secao-oculta py-12 bg-gray-50">
     <div class="container mx-auto px-4">
         <h2 class="text-2xl md:text-3xl font-bold text-principal mb-6">Últimas Notícias</h2>
@@ -192,15 +210,15 @@
         <div class="grid md:grid-cols-2 gap-8">
             <div class="bg-branco p-6 rounded-lg sombra">
                 <h3 class="text-lg font-semibold text-principal mb-4">Endereço</h3>
-                <p class="mb-3"><i class="fa fa-map-marker-alt text-principal mr-2"></i> Estrada UM, S/N</p>
-                <p class="mb-3"><i class="fa fa-map text-principal mr-2"></i> Belterra - PA</p>
-                <p class="mb-3"><i class="fa fa-envelope text-principal mr-2"></i> CEP: 68143-000</p>
+                <p class="mb-3"><i class="fa fa-map-marker-alt text-principal mr-2"></i> <span id="enderecoSite"></span></p>
+                <p class="mb-3"><i class="fa fa-map text-principal mr-2"></i> <span id="cidadeSite"></span></p>
+                <p class="mb-3"><i class="fa fa-envelope text-principal mr-2"></i> CEP: <span id="cepSite"></span></p>
+                <p class="mb-3"><i class="fa fa-phone text-principal mr-2"></i> <span id="telefoneSite"></span></p>
                 <p class="mb-4"><i class="fa fa-clock text-principal mr-2"></i> Veja nossos horários acima</p>
-
                 <h4 class="font-semibold mt-6 mb-3">Redes Sociais</h4>
                 <div class="flex gap-4 text-2xl text-principal">
-                    <a href="https://www.instagram.com/pazchurchbelterra?igsh=enE1cm5sNDJwOXQz" target="_blank" class="hover:text-escuro"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="https://youtube.com/@pazchurchbelterra2589?si=IayYGpX-ZZBOw6jQ" target="_blank" class="hover:text-escuro"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="" id="linkContatoInstagram" target="_blank" class="hover:text-escuro"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="" id="linkContatoYoutube" target="_blank" class="hover:text-escuro"><i class="fa-brands fa-youtube"></i></a>
                 </div>
             </div>
             <form id="formContato" class="bg-branco p-6 rounded-lg sombra">
@@ -222,35 +240,86 @@
     <div class="container mx-auto px-4 text-center">
         <img src="logo.png" alt="Paz Church Belterra" class="h-12 w-auto mx-auto mb-3 bg-branco p-1 rounded">
         <p class="font-semibold">Paz Church Belterra</p>
-        <p>Estrada UM, S/N • Belterra - PA • CEP: 68143-000</p>
+        <p><span id="enderecoRodape"></span> • <span id="cidadeRodape"></span> • CEP: <span id="cepRodape"></span></p>
         <p class="text-sm opacity-80 mt-2">&copy; 2026 - Todos os direitos reservados</p>
     </div>
 </footer>
 
 <script>
-// Menu Mobile
-document.getElementById('menuBtn').addEventListener('click', () => {
-    document.getElementById('menuMobile').classList.toggle('hidden');
-});
-function fecharMenuMobile() {
-    document.getElementById('menuMobile').classList.add('hidden');
-}
+let contagemInterval;
 
 function mostrarSecao(idSecao) {
     document.querySelectorAll('section').forEach(sec => sec.classList.add('secao-oculta'));
     document.getElementById(idSecao).classList.remove('secao-oculta');
     window.scrollTo(0, 0);
 }
+function fecharMenuMobile() { document.getElementById('menuMobile').classList.add('hidden'); }
+function abrirFormInscricao() { document.getElementById('modalInscricao').classList.remove('hidden'); }
+function fecharModal() { document.getElementById('modalInscricao').classList.add('hidden'); }
 
-// Carregar todos os dados
+function carregarConfiguracoes() {
+    const conf = JSON.parse(localStorage.getItem('configSite')) || {
+        endereco: "Estrada UM, S/N",
+        cidade: "Belterra - PA",
+        cep: "68143-000",
+        telefone: "(93) 99999-0000",
+        instagram: "https://www.instagram.com/pazchurchbelterra?igsh=enE1cm5sNDJwOXQz",
+        youtube: "https://youtube.com/@pazchurchbelterra2589?si=IayYGpX-ZZBOw6jQ"
+    };
+    document.getElementById('enderecoSite').textContent = conf.endereco;
+    document.getElementById('cidadeSite').textContent = conf.cidade;
+    document.getElementById('cepSite').textContent = conf.cep;
+    document.getElementById('telefoneSite').textContent = conf.telefone;
+    document.getElementById('linkInstagram').href = conf.instagram;
+    document.getElementById('linkYoutube').href = conf.youtube;
+    document.getElementById('linkContatoInstagram').href = conf.instagram;
+    document.getElementById('linkContatoYoutube').href = conf.youtube;
+    document.getElementById('enderecoRodape').textContent = conf.endereco;
+    document.getElementById('cidadeRodape').textContent = conf.cidade;
+    document.getElementById('cepRodape').textContent = conf.cep;
+}
+
+function carregarInscricao() {
+    const dados = JSON.parse(localStorage.getItem('configInscricao')) || { ativo: false };
+    const secao = document.getElementById('secaoInscricao');
+    if (!dados.ativo) { secao.classList.add('hidden'); return; }
+    secao.classList.remove('hidden');
+    document.getElementById('tituloInscricao').textContent = dados.titulo || '';
+    document.getElementById('descInscricao').textContent = dados.descricao || '';
+    document.getElementById('valorInscricao').textContent = dados.valor || 'Gratuito';
+    const dataAlvo = new Date(dados.dataLimite);
+    if (contagemInterval) clearInterval(contagemInterval);
+    contagemInterval = setInterval(() => {
+        const agora = new Date();
+        const diferenca = dataAlvo - agora;
+        if (diferenca <= 0) {
+            clearInterval(contagemInterval);
+            document.getElementById('contagemRegressiva').textContent = 'Inscrições encerradas';
+            return;
+        }
+        const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
+        const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
+        const segundos = Math.floor((diferenca % (1000 * 60)) / 1000);
+        document.getElementById('contagemRegressiva').textContent = `${dias}d ${horas}h ${minutos}m ${segundos}s`;
+    }, 1000);
+}
+
+function extrairIdYouTube(url) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+}
+
 function carregarTudo() {
+    carregarConfiguracoes();
+    carregarInscricao();
     const noticias = JSON.parse(localStorage.getItem('noticias')) || [];
     const eventos = JSON.parse(localStorage.getItem('eventos')) || [];
     const celulas = JSON.parse(localStorage.getItem('celulas')) || [];
     const galeria = JSON.parse(localStorage.getItem('galeria')) || [];
     const videos = JSON.parse(localStorage.getItem('videos')) || [];
 
-    // Carregar vídeos na página inicial
     document.getElementById('listaVideosInicio').innerHTML = videos.length ?
         videos.slice(0, 2).map(v => `
             <div class="bg-branco rounded-lg sombra p-4">
@@ -264,7 +333,6 @@ function carregarTudo() {
             </div>
         `).join('') : '<p class="col-span-full text-center text-gray-500 py-6">Nenhum vídeo cadastrado ainda.</p>';
 
-    // Carregar eventos
     document.getElementById('eventosInicio').innerHTML = eventos.length ?
         eventos.slice(0, 4).map(e => `
             <div class="bg-branco rounded-lg sombra overflow-hidden">
@@ -317,24 +385,16 @@ function carregarTudo() {
     `).join('') : '<p class="col-span-full text-center text-gray-500 py-10">Nenhuma foto cadastrada.</p>';
 }
 
-function extrairIdYouTube(url) {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
-}
-
 function buscarCelula() {
     const termo = document.getElementById('buscaBairro').value.trim().toLowerCase();
     const celulas = JSON.parse(localStorage.getItem('celulas')) || [];
     const resultado = document.getElementById('resultadoBusca');
-
     if (!termo) {
         resultado.className = 'mt-4 p-3 rounded bg-yellow-100 text-yellow-800';
         resultado.textContent = 'Digite o nome do bairro para pesquisar.';
         resultado.classList.remove('hidden');
         return;
     }
-
     const encontradas = celulas.filter(c => c.bairro.toLowerCase().includes(termo));
     if (encontradas.length > 0) {
         resultado.className = 'mt-4 p-3 rounded bg-green-100 text-green-800';
@@ -353,7 +413,6 @@ function buscarCelula() {
     resultado.classList.remove('hidden');
 }
 
-// Salvar mensagem no sistema para o admin ver
 document.getElementById('formContato').addEventListener('submit', e => {
     e.preventDefault();
     const mensagem = {
@@ -367,8 +426,30 @@ document.getElementById('formContato').addEventListener('submit', e => {
     const mensagens = JSON.parse(localStorage.getItem('mensagensRecebidas')) || [];
     mensagens.unshift(mensagem);
     localStorage.setItem('mensagensRecebidas', JSON.stringify(mensagens));
-    alert('Mensagem enviada com sucesso! Obrigado por entrar em contato.');
+    alert('Mensagem enviada com sucesso!');
     e.target.reset();
+});
+
+document.getElementById('formInscricao').addEventListener('submit', e => {
+    e.preventDefault();
+    const inscrito = {
+        id: Date.now(),
+        nome: document.getElementById('nomeIns').value,
+        telefone: document.getElementById('telefoneIns').value,
+        email: document.getElementById('emailIns').value,
+        cidade: document.getElementById('cidadeIns').value,
+        data: new Date().toLocaleString('pt-BR')
+    };
+    const lista = JSON.parse(localStorage.getItem('inscritos')) || [];
+    lista.unshift(inscrito);
+    localStorage.setItem('inscritos', JSON.stringify(lista));
+    alert('Inscrição realizada com sucesso! Agradecemos seu interesse.');
+    e.target.reset();
+    fecharModal();
+});
+
+document.getElementById('menuBtn').addEventListener('click', () => {
+    document.getElementById('menuMobile').classList.toggle('hidden');
 });
 
 window.onload = carregarTudo;
