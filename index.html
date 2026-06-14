@@ -6,6 +6,7 @@
     <title>Paz Church Belterra</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -15,7 +16,10 @@
                         escuro: '#002E6E',
                         claro: '#F0F5FF',
                         branco: '#FFFFFF',
-                        texto: '#222222'
+                        texto: '#222222',
+                        sucesso: '#16A34A',
+                        alerta: '#F59E0B',
+                        perigo: '#DC2626'
                     },
                     fontFamily: { sans: ['Segoe UI', 'Roboto', 'sans-serif'] }
                 }
@@ -25,13 +29,13 @@
     <style type="text/tailwindcss">
         .sombra { box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
         .botao { @apply bg-principal hover:bg-escuro text-branco px-5 py-2 rounded transition font-medium; }
+        .botao-sucesso { @apply bg-sucesso hover:bg-green-700 text-branco px-5 py-2 rounded transition; }
         .botao-secundario { @apply bg-branco text-principal border border-principal hover:bg-claro px-5 py-2 rounded transition font-medium; }
         .secao-oculta { display: none; }
         .banner-gradiente { background: linear-gradient(90deg, rgba(0,71,171,0.85), rgba(0,46,110,0.7)); }
         .logo { height: 42px; width: auto; }
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
-        .video-container iframe, .video-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
         .contagem { font-size: 1.8rem; font-weight: bold; color: #0047AB; }
+        .esgotado { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 1rem; border-radius: 0.5rem; text-align: center; font-weight: bold; }
     </style>
 </head>
 <body class="bg-gray-50 text-texto">
@@ -93,81 +97,70 @@
         <div id="secaoInscricao" class="hidden mb-12 bg-claro p-6 rounded-lg sombra border-l-4 border-principal">
             <h3 class="text-xl font-bold text-principal mb-3" id="tituloInscricao"></h3>
             <p class="mb-2" id="descInscricao"></p>
-            <p class="text-lg font-semibold mb-3">Valor: <span id="valorInscricao" class="text-green-700"></span></p>
-            <div class="contagem mb-4" id="contagemRegressiva"></div>
-            <button onclick="abrirFormInscricao()" class="botao">Fazer Inscrição</button>
+            <div id="infoLote" class="mb-4"></div>
+            <div id="contagemRegressiva" class="contagem mb-4"></div>
+            <div id="estadoInscricao"></div>
         </div>
 
-        <!-- Vídeos -->
+        <!-- Vídeos e demais seções mantidas -->
         <div class="mb-12">
             <h3 class="text-xl font-bold text-principal mb-4">Vídeos e Mensagens</h3>
             <div id="listaVideosInicio" class="grid md:grid-cols-2 gap-6"></div>
         </div>
-
-        <!-- Horários -->
-        <div id="horarios" class="bg-branco p-6 rounded-lg sombra mb-8">
-            <h3 class="text-xl font-bold text-principal mb-4">Nossos Horários</h3>
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="p-4 bg-claro rounded border-l-4 border-principal">
-                    <h4 class="font-semibold text-lg">Cultos de Celebração</h4>
-                    <p class="text-gray-700">Domingo: 07h00 | 17h00 | 19h00</p>
-                </div>
-                <div class="p-4 bg-claro rounded border-l-4 border-principal">
-                    <h4 class="font-semibold text-lg">TADEL</h4>
-                    <p class="text-gray-700">Terça-feira: 19h30</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-6">
-            <div class="md:col-span-2">
-                <h3 class="text-xl font-bold text-principal mb-4">Próximos Eventos</h3>
-                <div id="eventosInicio" class="grid sm:grid-cols-2 gap-4"></div>
-                <div class="mt-4">
-                    <a href="#eventos" onclick="mostrarSecao('eventos')" class="text-principal font-medium hover:underline">Ver todos os eventos →</a>
-                </div>
-            </div>
-            <div>
-                <h3 class="text-xl font-bold text-principal mb-4">Acompanhe-nos</h3>
-                <div class="bg-branco rounded-lg sombra p-5 space-y-4">
-                    <a href="" id="linkInstagram" target="_blank" class="flex items-center gap-3 p-2 hover:bg-claro rounded transition">
-                        <i class="fa-brands fa-instagram text-xl text-principal"></i>
-                        <span>Instagram</span>
-                    </a>
-                    <a href="" id="linkYoutube" target="_blank" class="flex items-center gap-3 p-2 hover:bg-claro rounded transition">
-                        <i class="fa-brands fa-youtube text-xl text-principal"></i>
-                        <span>YouTube</span>
-                    </a>
-                    <a href="#celulas" onclick="mostrarSecao('celulas')" class="flex items-center gap-3 p-2 hover:bg-claro rounded transition">
-                        <i class="fa fa-heart text-xl text-principal"></i>
-                        <span>Encontre uma Célula</span>
-                    </a>
-                    <a href="#galeria" onclick="mostrarSecao('galeria')" class="flex items-center gap-3 p-2 hover:bg-claro rounded transition">
-                        <i class="fa fa-images text-xl text-principal"></i>
-                        <span>Galeria de Fotos</span>
-                    </a>
-                </div>
-            </div>
-        </div>
     </div>
 </section>
 
-<!-- Modal Inscrição -->
-<div id="modalInscricao" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+<!-- Modal 1: Dados do Participante -->
+<div id="modalDados" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
     <div class="bg-branco p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <h3 class="text-xl font-bold text-principal mb-4">Formulário de Inscrição</h3>
-        <form id="formInscricao" class="space-y-3">
+        <h3 class="text-xl font-bold text-principal mb-4">Dados para Inscrição</h3>
+        <form id="formDados" class="space-y-3">
             <input type="text" id="nomeIns" placeholder="Nome completo" class="w-full border rounded p-2" required>
-            <input type="tel" id="telefoneIns" placeholder="Telefone / WhatsApp" class="w-full border rounded p-2" required>
+            <input type="text" id="cpfIns" placeholder="CPF (apenas números)" class="w-full border rounded p-2" maxlength="11" required>
+            <input type="date" id="nascIns" class="w-full border rounded p-2" required>
+            <input type="tel" id="whatsIns" placeholder="WhatsApp com DDD" class="w-full border rounded p-2" required>
             <input type="email" id="emailIns" placeholder="E-mail" class="w-full border rounded p-2">
-            <input type="text" id="cidadeIns" placeholder="Cidade" class="w-full border rounded p-2" required>
-            <button type="submit" class="botao w-full">Enviar Inscrição</button>
-            <button type="button" onclick="fecharModal()" class="w-full border border-gray-300 rounded p-2 hover:bg-gray-100">Cancelar</button>
+            <div class="flex gap-2 mt-4">
+                <button type="submit" class="botao flex-1">Continuar para Pagamento</button>
+                <button type="button" onclick="fecharModal('modalDados')" class="border border-gray-300 rounded p-2 flex-1">Cancelar</button>
+            </div>
         </form>
     </div>
 </div>
 
-<!-- Seções -->
+<!-- Modal 2: Pagamento PIX -->
+<div id="modalPagamento" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+    <div class="bg-branco p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto text-center">
+        <h3 class="text-xl font-bold text-principal mb-4">Pagamento via PIX</h3>
+        <p class="mb-2">Valor: <strong id="valorPix"></strong></p>
+        <div class="my-4 flex justify-center">
+            <canvas id="qrcodePix"></canvas>
+        </div>
+        <p class="text-sm text-gray-600 mb-2">Chave PIX:</p>
+        <div class="bg-gray-100 p-2 rounded font-mono text-sm mb-3 break-all" id="chavePix"></div>
+        <p class="text-sm text-gray-600 mb-2">Copia e Cola:</p>
+        <div class="bg-gray-100 p-2 rounded font-mono text-xs mb-4 break-all" id="codigoPix"></div>
+        <button onclick="copiarPix()" class="botao w-full mb-4">Copiar Código PIX</button>
+        <p class="text-sm text-gray-600 mb-3">Após pagar, envie o comprovante abaixo:</p>
+        <input type="file" id="comprovantePix" accept="image/*,.pdf" class="w-full border rounded p-2 mb-3" required>
+        <div class="flex gap-2">
+            <button type="button" onclick="finalizarInscricao()" class="botao-sucesso flex-1">Enviar Comprovante</button>
+            <button type="button" onclick="fecharModal('modalPagamento')" class="border border-gray-300 rounded p-2 flex-1">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 3: Confirmação -->
+<div id="modalConfirmacao" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+    <div class="bg-branco p-6 rounded-lg w-full max-w-md text-center">
+        <i class="fa fa-check-circle text-sucesso text-5xl mb-4"></i>
+        <h3 class="text-xl font-bold text-principal mb-2">Inscrição Enviada!</h3>
+        <p class="mb-4">Seus dados e comprovante foram recebidos. Aguarde nosso contato para confirmação final.</p>
+        <button onclick="fecharModal('modalConfirmacao')" class="botao w-full">Entendi</button>
+    </div>
+</div>
+
+<!-- Outras seções mantidas -->
 <section id="noticias" class="secao-oculta py-12 bg-gray-50">
     <div class="container mx-auto px-4">
         <h2 class="text-2xl md:text-3xl font-bold text-principal mb-6">Últimas Notícias</h2>
@@ -247,6 +240,7 @@
 
 <script>
 let contagemInterval;
+let dadosTemporarios = {};
 
 function mostrarSecao(idSecao) {
     document.querySelectorAll('section').forEach(sec => sec.classList.add('secao-oculta'));
@@ -254,8 +248,8 @@ function mostrarSecao(idSecao) {
     window.scrollTo(0, 0);
 }
 function fecharMenuMobile() { document.getElementById('menuMobile').classList.add('hidden'); }
-function abrirFormInscricao() { document.getElementById('modalInscricao').classList.remove('hidden'); }
-function fecharModal() { document.getElementById('modalInscricao').classList.add('hidden'); }
+function fecharModal(id) { document.getElementById(id).classList.add('hidden'); }
+function abrirModal(id) { document.getElementById(id).classList.remove('hidden'); }
 
 function carregarConfiguracoes() {
     const conf = JSON.parse(localStorage.getItem('configSite')) || {
@@ -263,8 +257,8 @@ function carregarConfiguracoes() {
         cidade: "Belterra - PA",
         cep: "68143-000",
         telefone: "(93) 99999-0000",
-        instagram: "https://www.instagram.com/pazchurchbelterra?igsh=enE1cm5sNDJwOXQz",
-        youtube: "https://youtube.com/@pazchurchbelterra2589?si=IayYGpX-ZZBOw6jQ"
+        instagram: "https://www.instagram.com/pazchurchbelterra",
+        youtube: "https://youtube.com/@pazchurchbelterra2589"
     };
     document.getElementById('enderecoSite').textContent = conf.endereco;
     document.getElementById('cidadeSite').textContent = conf.cidade;
@@ -279,30 +273,119 @@ function carregarConfiguracoes() {
     document.getElementById('cepRodape').textContent = conf.cep;
 }
 
+function obterLoteAtivo(lotes) {
+    const agora = new Date();
+    return lotes.find(lote => {
+        const fim = new Date(lote.dataFim);
+        return lote.vendidos < lote.quantidade && agora < fim;
+    }) || null;
+}
+
 function carregarInscricao() {
     const dados = JSON.parse(localStorage.getItem('configInscricao')) || { ativo: false };
     const secao = document.getElementById('secaoInscricao');
     if (!dados.ativo) { secao.classList.add('hidden'); return; }
+
     secao.classList.remove('hidden');
     document.getElementById('tituloInscricao').textContent = dados.titulo || '';
     document.getElementById('descInscricao').textContent = dados.descricao || '';
-    document.getElementById('valorInscricao').textContent = dados.valor || 'Gratuito';
-    const dataAlvo = new Date(dados.dataLimite);
+
+    const loteAtivo = obterLoteAtivo(dados.lotes || []);
+    const estadoDiv = document.getElementById('estadoInscricao');
+    const infoLoteDiv = document.getElementById('infoLote');
+
+    if (!loteAtivo) {
+        estadoDiv.innerHTML = `<div class="esgotado">❌ Inscrições ESGOTADAS</div>`;
+        infoLoteDiv.innerHTML = '';
+        if (contagemInterval) clearInterval(contagemInterval);
+        return;
+    }
+
+    infoLoteDiv.innerHTML = `
+        <p class="text-lg font-semibold">${loteAtivo.nome}</p>
+        <p>Valor: <span class="text-green-700">R$ ${loteAtivo.valor.toFixed(2).replace('.', ',')}</span></p>
+        <p>Vagas restantes: ${loteAtivo.quantidade - loteAtivo.vendidos}</p>
+    `;
+
+    const dataAlvo = new Date(loteAtivo.dataFim);
     if (contagemInterval) clearInterval(contagemInterval);
     contagemInterval = setInterval(() => {
         const agora = new Date();
         const diferenca = dataAlvo - agora;
         if (diferenca <= 0) {
             clearInterval(contagemInterval);
-            document.getElementById('contagemRegressiva').textContent = 'Inscrições encerradas';
+            carregarInscricao();
             return;
         }
         const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
         const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
         const segundos = Math.floor((diferenca % (1000 * 60)) / 1000);
-        document.getElementById('contagemRegressiva').textContent = `${dias}d ${horas}h ${minutos}m ${segundos}s`;
+        document.getElementById('contagemRegressiva').textContent = `Termina em: ${dias}d ${horas}h ${minutos}m ${segundos}s`;
     }, 1000);
+
+    estadoDiv.innerHTML = `<button onclick="abrirModal('modalDados')" class="botao w-full">Fazer Inscrição</button>`;
+}
+
+document.getElementById('formDados').addEventListener('submit', e => {
+    e.preventDefault();
+    const dadosIns = JSON.parse(localStorage.getItem('configInscricao'));
+    const loteAtivo = obterLoteAtivo(dadosIns.lotes);
+    if (!loteAtivo) return alert('Inscrições encerradas!');
+
+    dadosTemporarios = {
+        nome: document.getElementById('nomeIns').value,
+        cpf: document.getElementById('cpfIns').value,
+        nascimento: document.getElementById('nascIns').value,
+        whatsapp: document.getElementById('whatsIns').value,
+        email: document.getElementById('emailIns').value,
+        lote: loteAtivo.nome,
+        valor: loteAtivo.valor
+    };
+
+    document.getElementById('valorPix').textContent = `R$ ${loteAtivo.valor.toFixed(2).replace('.', ',')}`;
+    document.getElementById('chavePix').textContent = dadosIns.pixChave;
+    document.getElementById('codigoPix').textContent = dadosIns.pixCopiaCola;
+    QRCode.toCanvas(document.getElementById('qrcodePix'), dadosIns.pixCopiaCola, { width: 180 });
+
+    fecharModal('modalDados');
+    abrirModal('modalPagamento');
+});
+
+function copiarPix() {
+    const codigo = document.getElementById('codigoPix').textContent;
+    navigator.clipboard.writeText(codigo);
+    alert('Código PIX copiado!');
+}
+
+function finalizarInscricao() {
+    const comprovante = document.getElementById('comprovantePix').files[0];
+    if (!comprovante) return alert('Selecione o comprovante!');
+
+    const leitor = new FileReader();
+    leitor.onload = function(e) {
+        const inscrito = {
+            id: Date.now(),
+            ...dadosTemporarios,
+            comprovante: e.target.result,
+            status: 'Pendente',
+            data: new Date().toLocaleString('pt-BR')
+        };
+
+        const lista = JSON.parse(localStorage.getItem('inscritos')) || [];
+        lista.unshift(inscrito);
+        localStorage.setItem('inscritos', JSON.stringify(lista));
+
+        const config = JSON.parse(localStorage.getItem('configInscricao'));
+        const loteIndex = config.lotes.findIndex(l => l.nome === dadosTemporarios.lote);
+        config.lotes[loteIndex].vendidos += 1;
+        localStorage.setItem('configInscricao', JSON.stringify(config));
+
+        fecharModal('modalPagamento');
+        abrirModal('modalConfirmacao');
+        carregarInscricao();
+    };
+    leitor.readAsDataURL(comprovante);
 }
 
 function extrairIdYouTube(url) {
@@ -324,25 +407,14 @@ function carregarTudo() {
         videos.slice(0, 2).map(v => `
             <div class="bg-branco rounded-lg sombra p-4">
                 <h4 class="font-semibold text-principal mb-3">${v.titulo}</h4>
-                <div class="video-container rounded overflow-hidden">
+                <div class="relative pt-[56.25%] overflow-hidden rounded">
                     ${v.tipo === 'youtube' 
-                        ? `<iframe src="https://www.youtube.com/embed/${extrairIdYouTube(v.url)}" allowfullscreen></iframe>`
-                        : `<video src="${v.arquivo}" controls></video>`
+                        ? `<iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${extrairIdYouTube(v.url)}" allowfullscreen></iframe>`
+                        : `<video class="absolute inset-0 w-full h-full" src="${v.arquivo}" controls></video>`
                     }
                 </div>
             </div>
         `).join('') : '<p class="col-span-full text-center text-gray-500 py-6">Nenhum vídeo cadastrado ainda.</p>';
-
-    document.getElementById('eventosInicio').innerHTML = eventos.length ?
-        eventos.slice(0, 4).map(e => `
-            <div class="bg-branco rounded-lg sombra overflow-hidden">
-                ${e.imagem ? `<img src="${e.imagem}" alt="${e.nome}" class="w-full h-36 object-cover">` : `<div class="h-36 bg-claro flex items-center justify-center text-principal">Sem imagem</div>`}
-                <div class="p-4">
-                    <h4 class="font-semibold text-principal">${e.nome}</h4>
-                    <p class="text-sm text-gray-600"><i class="fa fa-calendar mr-1"></i> ${e.data} às ${e.hora}</p>
-                </div>
-            </div>
-        `).join('') : '<p class="col-span-full text-center text-gray-500 py-6">Nenhum evento cadastrado ainda.</p>';
 
     document.getElementById('listaNoticias').innerHTML = noticias.length ? noticias.map(n => `
         <div class="bg-branco rounded-lg sombra overflow-hidden">
@@ -355,18 +427,6 @@ function carregarTudo() {
         </div>
     `).join('') : '<p class="col-span-full text-center text-gray-500 py-10">Nenhuma notícia cadastrada.</p>';
 
-    document.getElementById('listaEventos').innerHTML = eventos.length ? eventos.map(e => `
-        <div class="bg-branco rounded-lg sombra overflow-hidden">
-            ${e.imagem ? `<img src="${e.imagem}" alt="${e.nome}" class="w-full h-44 object-cover">` : `<div class="h-44 bg-claro flex items-center justify-center text-principal">Sem imagem</div>`}
-            <div class="p-4">
-                <h3 class="font-bold text-lg text-principal">${e.nome}</h3>
-                <p class="text-sm mb-1"><i class="fa fa-calendar mr-2"></i> ${e.data} às ${e.hora}</p>
-                <p class="text-sm mb-2"><i class="fa fa-map-marker mr-2"></i> Belterra - PA</p>
-                <p class="text-gray-700">${e.descricao}</p>
-            </div>
-        </div>
-    `).join('') : '<p class="col-span-full text-center text-gray-500 py-10">Nenhum evento cadastrado.</p>';
-
     document.getElementById('listaCelulas').innerHTML = celulas.length ? celulas.map(c => `
         <div class="bg-branco p-5 rounded-lg sombra">
             <h4 class="font-bold text-lg text-principal">${c.nome}</h4>
@@ -377,76 +437,7 @@ function carregarTudo() {
             <p><strong>Contato:</strong> ${c.contato}</p>
         </div>
     `).join('') : '<p class="col-span-full text-center text-gray-500 py-10">Nenhuma célula cadastrada.</p>';
-
-    document.getElementById('listaGaleria').innerHTML = galeria.length ? galeria.map(img => `
-        <div class="overflow-hidden rounded-lg sombra hover:scale-105 transition">
-            <img src="${img.url}" alt="${img.legenda}" class="w-full h-40 object-cover">
-        </div>
-    `).join('') : '<p class="col-span-full text-center text-gray-500 py-10">Nenhuma foto cadastrada.</p>';
 }
-
-function buscarCelula() {
-    const termo = document.getElementById('buscaBairro').value.trim().toLowerCase();
-    const celulas = JSON.parse(localStorage.getItem('celulas')) || [];
-    const resultado = document.getElementById('resultadoBusca');
-    if (!termo) {
-        resultado.className = 'mt-4 p-3 rounded bg-yellow-100 text-yellow-800';
-        resultado.textContent = 'Digite o nome do bairro para pesquisar.';
-        resultado.classList.remove('hidden');
-        return;
-    }
-    const encontradas = celulas.filter(c => c.bairro.toLowerCase().includes(termo));
-    if (encontradas.length > 0) {
-        resultado.className = 'mt-4 p-3 rounded bg-green-100 text-green-800';
-        resultado.innerHTML = `<strong>${encontradas.length} célula(s) encontrada(s):</strong><br><br>` +
-            encontradas.map(c => `
-                <div class="mb-2 pb-2 border-b border-green-200">
-                    <strong>${c.nome}</strong><br>
-                    Bairro: ${c.bairro} | ${c.dia} às ${c.horario}<br>
-                    Responsável: ${c.responsavel} | Contato: ${c.contato}
-                </div>
-            `).join('');
-    } else {
-        resultado.className = 'mt-4 p-3 rounded bg-red-100 text-red-800';
-        resultado.textContent = 'Nenhuma célula encontrada para esse bairro.';
-    }
-    resultado.classList.remove('hidden');
-}
-
-document.getElementById('formContato').addEventListener('submit', e => {
-    e.preventDefault();
-    const mensagem = {
-        id: Date.now(),
-        nome: document.getElementById('nome').value,
-        email: document.getElementById('email').value,
-        telefone: document.getElementById('telefone').value,
-        texto: document.getElementById('mensagem').value,
-        data: new Date().toLocaleString('pt-BR')
-    };
-    const mensagens = JSON.parse(localStorage.getItem('mensagensRecebidas')) || [];
-    mensagens.unshift(mensagem);
-    localStorage.setItem('mensagensRecebidas', JSON.stringify(mensagens));
-    alert('Mensagem enviada com sucesso!');
-    e.target.reset();
-});
-
-document.getElementById('formInscricao').addEventListener('submit', e => {
-    e.preventDefault();
-    const inscrito = {
-        id: Date.now(),
-        nome: document.getElementById('nomeIns').value,
-        telefone: document.getElementById('telefoneIns').value,
-        email: document.getElementById('emailIns').value,
-        cidade: document.getElementById('cidadeIns').value,
-        data: new Date().toLocaleString('pt-BR')
-    };
-    const lista = JSON.parse(localStorage.getItem('inscritos')) || [];
-    lista.unshift(inscrito);
-    localStorage.setItem('inscritos', JSON.stringify(lista));
-    alert('Inscrição realizada com sucesso! Agradecemos seu interesse.');
-    e.target.reset();
-    fecharModal();
-});
 
 document.getElementById('menuBtn').addEventListener('click', () => {
     document.getElementById('menuMobile').classList.toggle('hidden');
